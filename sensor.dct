@@ -81,6 +81,8 @@ csrc
 csrc_bit
 dc
 dc_bit
+dd0
+dd1
 delay_100ms
 delay_10ms
 delay_10us
@@ -95,6 +97,7 @@ delay_5ms
 delay_80us
 delay_8ms
 delay_cyc
+display_temp
 div_16x16_s
 div_16x16_s_l
 div_16x16_u
@@ -108,6 +111,7 @@ double2int
 double2longint
 double2longword
 double2word
+ds18b20
 eeadr
 eecon1
 eecon2
@@ -126,6 +130,7 @@ fsrptr
 get_fosc_khz
 gie
 gie_bit
+i
 ics_auto
 ics_off
 indf
@@ -142,6 +147,7 @@ irp_bit
 longint2double
 longword2double
 main
+mask
 mul_16x16_s
 mul_16x16_u
 mul_32x32_fp
@@ -149,6 +155,7 @@ mul_32x32_s
 mul_32x32_u
 mul_8x8_s
 mul_8x8_u
+n_flag
 not_bo
 not_bo_bit
 not_bod
@@ -301,6 +308,7 @@ t2ckps0_bit
 t2ckps1
 t2ckps1_bit
 t2con
+temp_value
 tmr0
 tmr0ie
 tmr0ie_bit
