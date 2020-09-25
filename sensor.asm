@@ -31,8 +31,6 @@ _main:
 ;sensor.c,23 :: 		valor_manual = 18;
 	MOVLW      18
 	MOVWF      _valor_manual+0
-;sensor.c,27 :: 		oldstate = 0;
-	BCF        _oldstate+0, BitPos(_oldstate+0)
 ;sensor.c,28 :: 		do
 L_main0:
 ;sensor.c,30 :: 		DD0 = valor_manual % 10; // Extract Ones Digit
@@ -76,7 +74,7 @@ L_main0:
 	MOVF       R0+0, 0
 	MOVWF      FARG_display_temp_DD1+0
 	CALL       _display_temp+0
-;sensor.c,36 :: 		if (presionBoton(3)==3)
+;sensor.c,36 :: 		if (presionBoton(3) == 3)
 	MOVLW      3
 	MOVWF      FARG_presionBoton_pin+0
 	CALL       _presionBoton+0
@@ -95,7 +93,7 @@ L_main0:
 L_main4:
 ;sensor.c,42 :: 		}
 L_main3:
-;sensor.c,43 :: 		if (presionBoton(6)==6)
+;sensor.c,43 :: 		if (presionBoton(6) == 6)
 	MOVLW      6
 	MOVWF      FARG_presionBoton_pin+0
 	CALL       _presionBoton+0
@@ -114,7 +112,7 @@ L_main3:
 L_main6:
 ;sensor.c,49 :: 		}
 L_main5:
-;sensor.c,50 :: 		if (presionBoton(7)==7)
+;sensor.c,50 :: 		if (presionBoton(7) == 7)
 	MOVLW      7
 	MOVWF      FARG_presionBoton_pin+0
 	CALL       _presionBoton+0
@@ -519,7 +517,12 @@ L_end_DS18B20:
 _presionBoton:
 
 ;sensor.c,140 :: 		unsigned short presionBoton(unsigned short pin)
-;sensor.c,144 :: 		if (Button(&PORTA, pin, 100, 1))
+;sensor.c,157 :: 		int pulso = 0;
+	CLRF       presionBoton_pulso_L0+0
+	CLRF       presionBoton_pulso_L0+1
+	CLRF       presionBoton_oldstate_L0+0
+	CLRF       presionBoton_oldstate_L0+1
+;sensor.c,159 :: 		pulso = Button(&PORTA, pin, 100, 1);
 	MOVLW      PORTA+0
 	MOVWF      FARG_Button_port+0
 	MOVF       FARG_presionBoton_pin+0, 0
@@ -530,38 +533,71 @@ _presionBoton:
 	MOVWF      FARG_Button_active_state+0
 	CALL       _Button+0
 	MOVF       R0+0, 0
+	MOVWF      presionBoton_pulso_L0+0
+	CLRF       presionBoton_pulso_L0+1
+;sensor.c,160 :: 		if (pulso != 0)
+	MOVLW      0
+	XORWF      presionBoton_pulso_L0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__presionBoton43
+	MOVLW      0
+	XORWF      presionBoton_pulso_L0+0, 0
+L__presionBoton43:
 	BTFSC      STATUS+0, 2
 	GOTO       L_presionBoton33
-;sensor.c,146 :: 		oldstate = 1; // Update flag
-	BSF        _oldstate+0, BitPos(_oldstate+0)
-;sensor.c,147 :: 		}
+;sensor.c,162 :: 		oldstate = 1;
+	MOVLW      1
+	MOVWF      presionBoton_oldstate_L0+0
+	MOVLW      0
+	MOVWF      presionBoton_oldstate_L0+1
+;sensor.c,163 :: 		}
 L_presionBoton33:
-;sensor.c,149 :: 		if (oldstate && Button(&PORTA, pin, 100, 0))
-	BTFSS      _oldstate+0, BitPos(_oldstate+0)
-	GOTO       L_presionBoton36
+;sensor.c,164 :: 		while (pulso == 1)
+L_presionBoton34:
+	MOVLW      0
+	XORWF      presionBoton_pulso_L0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__presionBoton44
+	MOVLW      1
+	XORWF      presionBoton_pulso_L0+0, 0
+L__presionBoton44:
+	BTFSS      STATUS+0, 2
+	GOTO       L_presionBoton35
+;sensor.c,166 :: 		pulso = Button(&PORTA, pin, 100, 1);
 	MOVLW      PORTA+0
 	MOVWF      FARG_Button_port+0
 	MOVF       FARG_presionBoton_pin+0, 0
 	MOVWF      FARG_Button_pin+0
 	MOVLW      100
 	MOVWF      FARG_Button_time_ms+0
-	CLRF       FARG_Button_active_state+0
+	MOVLW      1
+	MOVWF      FARG_Button_active_state+0
 	CALL       _Button+0
 	MOVF       R0+0, 0
-	BTFSC      STATUS+0, 2
+	MOVWF      presionBoton_pulso_L0+0
+	CLRF       presionBoton_pulso_L0+1
+;sensor.c,167 :: 		}
+	GOTO       L_presionBoton34
+L_presionBoton35:
+;sensor.c,168 :: 		if (oldstate == 1)
+	MOVLW      0
+	XORWF      presionBoton_oldstate_L0+1, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L__presionBoton45
+	MOVLW      1
+	XORWF      presionBoton_oldstate_L0+0, 0
+L__presionBoton45:
+	BTFSS      STATUS+0, 2
 	GOTO       L_presionBoton36
-L__presionBoton37:
-;sensor.c,151 :: 		oldstate = 0; // Update flag
-	BCF        _oldstate+0, BitPos(_oldstate+0)
-;sensor.c,152 :: 		return pin;
+;sensor.c,170 :: 		return pin;
 	MOVF       FARG_presionBoton_pin+0, 0
 	MOVWF      R0+0
 	GOTO       L_end_presionBoton
-;sensor.c,153 :: 		}
+;sensor.c,171 :: 		}
 L_presionBoton36:
-;sensor.c,154 :: 		return 0;
+;sensor.c,174 :: 		return 0;
 	CLRF       R0+0
-;sensor.c,155 :: 		}
+;sensor.c,176 :: 		}
 L_end_presionBoton:
 	RETURN
 ; end of _presionBoton

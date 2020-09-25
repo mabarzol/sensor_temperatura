@@ -1,6 +1,6 @@
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
-bit oldstate;
+
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
@@ -24,7 +24,7 @@ void main()
     //ra3 temp +
     //ra6 temp -
     //ra7 start/stop
-    oldstate = 0;
+
     do
     {                            //--- main loop
         DD0 = valor_manual % 10; // Extract Ones Digit
@@ -33,21 +33,21 @@ void main()
         DD1 = mask(DD1);
         display_temp(DD0, DD1); // Infinite loop;
 
-        if (presionBoton(3)==3)
+        if (presionBoton(3) == 3)
         {
             if (valor_manual <= 50)
             {
                 valor_manual++;
             }
         }
-        if (presionBoton(6)==6)
+        if (presionBoton(6) == 6)
         {
             if (valor_manual >= 5)
             {
                 valor_manual--;
             }
         }
-        if (presionBoton(7)==7)
+        if (presionBoton(7) == 7)
         {
             do
             {
@@ -139,8 +139,9 @@ void DS18B20() //Perform temperature reading
 }
 unsigned short presionBoton(unsigned short pin)
 {
-
-
+    /*
+    bit oldstate;
+    oldstate = 0;
     if (Button(&PORTA, pin, 100, 1))
     {                 // Detect logical one
         oldstate = 1; // Update flag
@@ -149,6 +150,27 @@ unsigned short presionBoton(unsigned short pin)
     if (oldstate && Button(&PORTA, pin, 100, 0))
     {                 // Detect one-to-zero transition
         oldstate = 0; // Update flag
+        return pin;
     }
     return 0;
+    */
+    int pulso = 0;
+    int oldstate = 0;
+    pulso = Button(&PORTA, pin, 100, 1);
+    if (pulso != 0)
+    {
+        oldstate = 1;
+    }
+    while (pulso == 1)
+    {
+        pulso = Button(&PORTA, pin, 100, 1);
+    }
+    if (oldstate == 1)
+    {
+        return pin;
+    }
+    else
+    {
+        return 0;
+    }
 }

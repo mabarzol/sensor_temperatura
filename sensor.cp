@@ -1,7 +1,7 @@
 #line 1 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
-bit oldstate;
+
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
@@ -25,7 +25,7 @@ void main()
 
 
 
- oldstate = 0;
+
  do
  {
  DD0 = valor_manual % 10;
@@ -34,21 +34,21 @@ void main()
  DD1 = mask(DD1);
  display_temp(DD0, DD1);
 
- if (presionBoton(3)==3)
+ if (presionBoton(3) == 3)
  {
  if (valor_manual <= 50)
  {
  valor_manual++;
  }
  }
- if (presionBoton(6)==6)
+ if (presionBoton(6) == 6)
  {
  if (valor_manual >= 5)
  {
  valor_manual--;
  }
  }
- if (presionBoton(7)==7)
+ if (presionBoton(7) == 7)
  {
  do
  {
@@ -140,17 +140,24 @@ void DS18B20()
 }
 unsigned short presionBoton(unsigned short pin)
 {
-
-
- if (Button(&PORTA, pin, 100, 1))
+#line 157 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
+ int pulso = 0;
+ int oldstate = 0;
+ pulso = Button(&PORTA, pin, 100, 1);
+ if (pulso != 0)
  {
  oldstate = 1;
  }
-
- if (oldstate && Button(&PORTA, pin, 100, 0))
+ while (pulso == 1)
  {
- oldstate = 0;
+ pulso = Button(&PORTA, pin, 100, 1);
+ }
+ if (oldstate == 1)
+ {
  return pin;
  }
+ else
+ {
  return 0;
+ }
 }
