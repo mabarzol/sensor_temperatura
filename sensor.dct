@@ -309,6 +309,9 @@ t2ckps0_bit
 t2ckps1
 t2ckps1_bit
 t2con
+temp_maxima
+temp_minima
+temp_por_defecto
 temp_value
 tmr0
 tmr0ie

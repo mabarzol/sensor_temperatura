@@ -1,7 +1,9 @@
 #line 1 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
-
+unsigned short temp_minima = 10;
+unsigned short temp_maxima = 50;
+unsigned short temp_por_defecto = 20;
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
@@ -21,10 +23,13 @@ void main()
  TRISB5_bit = 0;
  TRISB6_bit = 0;
  PORTB = 1;
- valor_manual = 18;
+ valor_manual = temp_por_defecto;
 
 
 
+ RA0_bit = 0;
+ RA1_bit = 0;
+ RA2_bit = 1;
 
  do
  {
@@ -36,14 +41,14 @@ void main()
 
  if (presionBoton(3) == 3)
  {
- if (valor_manual <= 50)
+ if (valor_manual <= temp_maxima)
  {
  valor_manual++;
  }
  }
  if (presionBoton(6) == 6)
  {
- if (valor_manual >= 5)
+ if (valor_manual >= temp_minima)
  {
  valor_manual--;
  }
@@ -59,7 +64,17 @@ void main()
  DD1 = (temp_value / 10) % 10;
  DD1 = mask(DD1);
  display_temp(DD0, DD1);
+ if (temp_value >= valor_manual)
+ {
+ RA2_bit = 0;
+ }
+ else
+ {
+ RA2_bit = 1;
+ }
+
  } while (!presionBoton(7));
+ RA2_bit = 1;
  }
 
  } while (1);
@@ -114,15 +129,12 @@ void display_temp(short DD0, short DD1)
 }
 void DS18B20()
 {
-
  Ow_Reset(&PORTA, 4);
  Ow_Write(&PORTA, 4, 0xCC);
  Ow_Write(&PORTA, 4, 0x44);
-
  Ow_Reset(&PORTA, 4);
  Ow_Write(&PORTA, 4, 0xCC);
  Ow_Write(&PORTA, 4, 0xBE);
-
 
  temp_value = Ow_Read(&PORTA, 4);
  temp_value = (Ow_Read(&PORTA, 4) << 8) + temp_value;
@@ -137,10 +149,17 @@ void DS18B20()
  temp_value += 1;
  temp_value = temp_value >> 4;
 
+ if (N_Flag == 1)
+ {
+ temp_value = 0;
+ }
+ if (temp_value >= 99)
+ {
+ temp_value = 99;
+ }
 }
 unsigned short presionBoton(unsigned short pin)
 {
-#line 157 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
  int pulso = 0;
  int oldstate = 0;
  pulso = Button(&PORTA, pin, 100, 1);
