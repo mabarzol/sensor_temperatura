@@ -1,6 +1,9 @@
 main
 	__CC2DW
 		____DoICP
+	Div_8X8_U
+	mask
+	display_temp
 	presionBoton
 		Button
 			Delay_500us
@@ -15,5 +18,3 @@ main
 			Delay_1us
 			Delay_50us
 	Div_16X16_U
-	mask
-	display_temp
