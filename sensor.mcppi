@@ -44,10 +44,9 @@ Count=0
 [PLDS]
 Count=0
 [Useses]
-Count=3
+Count=2
 File0=Button
 File1=One_Wire
-File2=Software_UART
 [EXPANDED_NODES]
 Node0=Sources
 Count=1

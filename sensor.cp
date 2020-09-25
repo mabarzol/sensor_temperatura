@@ -8,13 +8,14 @@ unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
 unsigned short presionBoton(unsigned short pin);
-
 void main()
 {
  CMCON |= 7;
+
  TRISA0_bit = 0;
  TRISA1_bit = 0;
  TRISA2_bit = 0;
+ TRISA4_bit = 0;
  TRISB0_bit = 0;
  TRISB1_bit = 0;
  TRISB2_bit = 0;
@@ -24,13 +25,9 @@ void main()
  TRISB6_bit = 0;
  PORTB = 1;
  valor_manual = temp_por_defecto;
-
-
-
  RA0_bit = 0;
  RA1_bit = 0;
  RA2_bit = 1;
-
  do
  {
  DD0 = valor_manual % 10;
@@ -129,15 +126,15 @@ void display_temp(short DD0, short DD1)
 }
 void DS18B20()
 {
- Ow_Reset(&PORTA, 4);
- Ow_Write(&PORTA, 4, 0xCC);
- Ow_Write(&PORTA, 4, 0x44);
- Ow_Reset(&PORTA, 4);
- Ow_Write(&PORTA, 4, 0xCC);
- Ow_Write(&PORTA, 4, 0xBE);
+ Ow_Reset(&PORTB, 7);
+ Ow_Write(&PORTB, 7, 0xCC);
+ Ow_Write(&PORTB, 7, 0x44);
+ Ow_Reset(&PORTB, 7);
+ Ow_Write(&PORTB, 7, 0xCC);
+ Ow_Write(&PORTB, 7, 0xBE);
 
- temp_value = Ow_Read(&PORTA, 4);
- temp_value = (Ow_Read(&PORTA, 4) << 8) + temp_value;
+ temp_value = Ow_Read(&PORTB, 7);
+ temp_value = (Ow_Read(&PORTB, 7) << 8) + temp_value;
 
 
  if (temp_value & 0x8000)
