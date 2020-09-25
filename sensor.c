@@ -1,37 +1,75 @@
-unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag;
+unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
+unsigned short presionBoton(unsigned short pin);
+
 void main()
 {
- CMCON  |= 7;                               // Disable Comparators
- 
+    CMCON |= 7;     // Disable Comparators
+    TRISA0_bit = 0; // RA.0 to RA3 Output
+    TRISA1_bit = 0;
+    TRISA2_bit = 0;
+    TRISB0_bit = 0;
+    TRISB1_bit = 0;
+    TRISB2_bit = 0;
+    TRISB3_bit = 0;
+    TRISB4_bit = 0;
+    TRISB5_bit = 0;
+    TRISB6_bit = 0;
+    PORTB = 1;
+    valor_manual = 20;
+    //ra3 temp +
+    //ra6 temp -
+    //ra7 start/stop
+    do
+    { //--- main loop
+
+        if (presionBoton(3))
+        {
+        }
+        if (presionBoton(6))
+        {
+        }
+        if (presionBoton(7))
+        {
+            N_Flag = 0; // Reset Temp Flag
+            DS18B20();
+            DD0 = temp_value % 10; // Extract Ones Digit
+            DD0 = mask(DD0);
+            DD1 = (temp_value / 10) % 10; // Extract Tens Digit
+            DD1 = mask(DD1);
+            display_temp(DD0, DD1); // Infinite loop;
+        }
+
+    } while (1);
 }
+
 unsigned short mask(unsigned short num) // Mask for 7 segment common anode;
 {
     switch (num)
     {
     case 0:
-        return 0xC0; // 0;
+        return 0x40; // 0;
     case 1:
-        return 0xF9; // 1;
+        return 0x79; // 1;
     case 2:
-        return 0xA4; // 2;
+        return 0x24; // 2;
     case 3:
-        return 0xB0; // 3;
+        return 0x30; // 3;
     case 4:
-        return 0x99; // 4;
+        return 0x19; // 4;
     case 5:
-        return 0x92; // 5;
+        return 0x12; // 5;
     case 6:
-        return 0x82; // 6;
+        return 0x02; // 6;
     case 7:
-        return 0xF8; // 7;
+        return 0x78; // 7;
     case 8:
-        return 0x80; // 8;
+        return 0x00; // 8;
     case 9:
-        return 0x90; // 9;
+        return 0x10; // 9;
     case 10:
         return 0xBF; // Symbol '-'
     case 11:
@@ -42,7 +80,7 @@ unsigned short mask(unsigned short num) // Mask for 7 segment common anode;
 }
 void display_temp(short DD0, short DD1)
 {
-    for (i = 0; i <= 2; i++)
+    for (i = 0; i <= 4; i++)
     {
         PORTB = DD0;
         RA0_bit = 0;
@@ -57,12 +95,15 @@ void display_temp(short DD0, short DD1)
 }
 void DS18B20() //Perform temperature reading
 {
+    //display_temp(DD0, DD1);
     Ow_Reset(&PORTA, 4);       // Onewire reset signal
     Ow_Write(&PORTA, 4, 0xCC); // Issue command SKIP_ROM
     Ow_Write(&PORTA, 4, 0x44); // Issue command CONVERT_T
+    //display_temp(DD0, DD1);
     Ow_Reset(&PORTA, 4);
     Ow_Write(&PORTA, 4, 0xCC); // Issue command SKIP_ROM
     Ow_Write(&PORTA, 4, 0xBE); // Issue command READ_SCRATCHPAD
+    //display_temp(DD0, DD1);
     // Next Read Temperature
     temp_value = Ow_Read(&PORTA, 4);                     // Read Byte 0 from Scratchpad
     temp_value = (Ow_Read(&PORTA, 4) << 8) + temp_value; // Then read Byte 1 from
@@ -77,4 +118,22 @@ void DS18B20() //Perform temperature reading
         temp_value += 1;          // 0.5 round to 1
     temp_value = temp_value >> 4; //<<<  // 1 for DS1820 and
                                   // 4 for DS18B20;
+}
+unsigned short presionBoton(unsigned short pin)
+{
+    bit oldstate;
+    oldstate = 0;
+    if (Button(&PORTA, pin, 10, 1))
+    {                 // Detect logical one
+        oldstate = 1; // Update flag
+    }
+    else
+    {
+        return 0;
+    }
+    if (oldstate && Button(&PORTA, pin, 10, 0))
+    {                 // Detect one-to-zero transition
+        oldstate = 0; // Update flag
+        return 1;
+    }
 }

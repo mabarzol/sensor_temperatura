@@ -1,38 +1,76 @@
 #line 1 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
-unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag;
+unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
+unsigned short presionBoton(unsigned short pin);
+
 void main()
 {
  CMCON |= 7;
+ TRISA0_bit = 0;
+ TRISA1_bit = 0;
+ TRISA2_bit = 0;
+ TRISB0_bit = 0;
+ TRISB1_bit = 0;
+ TRISB2_bit = 0;
+ TRISB3_bit = 0;
+ TRISB4_bit = 0;
+ TRISB5_bit = 0;
+ TRISB6_bit = 0;
+ PORTB = 1;
+ valor_manual = 20;
 
+
+
+ do
+ {
+
+ if (presionBoton(3))
+ {
+ }
+ if (presionBoton(6))
+ {
+ }
+ if (presionBoton(7))
+ {
+ N_Flag = 0;
+ DS18B20();
+ DD0 = temp_value % 10;
+ DD0 = mask(DD0);
+ DD1 = (temp_value / 10) % 10;
+ DD1 = mask(DD1);
+ display_temp(DD0, DD1);
+ }
+
+ } while (1);
 }
+
 unsigned short mask(unsigned short num)
 {
  switch (num)
  {
  case 0:
- return 0xC0;
+ return 0x40;
  case 1:
- return 0xF9;
+ return 0x79;
  case 2:
- return 0xA4;
+ return 0x24;
  case 3:
- return 0xB0;
+ return 0x30;
  case 4:
- return 0x99;
+ return 0x19;
  case 5:
- return 0x92;
+ return 0x12;
  case 6:
- return 0x82;
+ return 0x02;
  case 7:
- return 0xF8;
+ return 0x78;
  case 8:
- return 0x80;
+ return 0x00;
  case 9:
- return 0x90;
+ return 0x10;
  case 10:
  return 0xBF;
  case 11:
@@ -43,7 +81,7 @@ unsigned short mask(unsigned short num)
 }
 void display_temp(short DD0, short DD1)
 {
- for (i = 0; i <= 2; i++)
+ for (i = 0; i <= 4; i++)
  {
  PORTB = DD0;
  RA0_bit = 0;
@@ -58,12 +96,15 @@ void display_temp(short DD0, short DD1)
 }
 void DS18B20()
 {
+
  Ow_Reset(&PORTA, 4);
  Ow_Write(&PORTA, 4, 0xCC);
  Ow_Write(&PORTA, 4, 0x44);
+
  Ow_Reset(&PORTA, 4);
  Ow_Write(&PORTA, 4, 0xCC);
  Ow_Write(&PORTA, 4, 0xBE);
+
 
  temp_value = Ow_Read(&PORTA, 4);
  temp_value = (Ow_Read(&PORTA, 4) << 8) + temp_value;
@@ -78,4 +119,22 @@ void DS18B20()
  temp_value += 1;
  temp_value = temp_value >> 4;
 
+}
+unsigned short presionBoton(unsigned short pin)
+{
+ bit oldstate;
+ oldstate = 0;
+ if (Button(&PORTA, pin, 10, 1))
+ {
+ oldstate = 1;
+ }
+ else
+ {
+ return 0;
+ }
+ if (oldstate && Button(&PORTA, pin, 10, 0))
+ {
+ oldstate = 0;
+ return 1;
+ }
 }

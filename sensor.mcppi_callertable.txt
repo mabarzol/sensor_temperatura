@@ -1,3 +1,19 @@
 main
 	__CC2DW
 		____DoICP
+	presionBoton
+		Button
+			Delay_500us
+	DS18B20
+		Ow_Reset
+			Delay_500us
+			Delay_80us
+		Ow_Write
+			Delay_80us
+			Delay_50us
+		Ow_Read
+			Delay_1us
+			Delay_50us
+	Div_16X16_U
+	mask
+	display_temp

@@ -192,6 +192,7 @@ pir1
 porta
 portb
 pr2
+presionboton
 ps0
 ps0_bit
 ps1
@@ -387,6 +388,7 @@ txif
 txif_bit
 txreg
 txsta
+valor_manual
 vdelay_advanced_ms
 vdelay_ms
 vr0
