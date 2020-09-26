@@ -52,7 +52,7 @@ L_main0:
 	MOVF       R0+0, 0
 	MOVWF      _DD0+0
 ;sensor.c,33 :: 		DD0 = mask(DD0);
-	MOVF       R0+0, 0
+	MOVF       _DD0+0, 0
 	MOVWF      FARG_mask_num+0
 	CALL       _mask+0
 	MOVF       R0+0, 0
@@ -71,7 +71,7 @@ L_main0:
 	MOVF       R0+0, 0
 	MOVWF      _DD1+0
 ;sensor.c,35 :: 		DD1 = mask(DD1);
-	MOVF       R0+0, 0
+	MOVF       _DD1+0, 0
 	MOVWF      FARG_mask_num+0
 	CALL       _mask+0
 	MOVF       R0+0, 0
@@ -79,7 +79,7 @@ L_main0:
 ;sensor.c,36 :: 		display_temp(DD0, DD1);
 	MOVF       _DD0+0, 0
 	MOVWF      FARG_display_temp_DD0+0
-	MOVF       R0+0, 0
+	MOVF       _DD1+0, 0
 	MOVWF      FARG_display_temp_DD1+0
 	CALL       _display_temp+0
 ;sensor.c,38 :: 		if (presionBoton(3) == 3) //Si se presiono el boton de temp +
@@ -151,7 +151,7 @@ L_main8:
 	MOVF       R0+0, 0
 	MOVWF      _DD0+0
 ;sensor.c,59 :: 		DD0 = mask(DD0);
-	MOVF       R0+0, 0
+	MOVF       _DD0+0, 0
 	MOVWF      FARG_mask_num+0
 	CALL       _mask+0
 	MOVF       R0+0, 0
@@ -178,7 +178,7 @@ L_main8:
 	MOVF       R0+0, 0
 	MOVWF      _DD1+0
 ;sensor.c,61 :: 		DD1 = mask(DD1);
-	MOVF       R0+0, 0
+	MOVF       _DD1+0, 0
 	MOVWF      FARG_mask_num+0
 	CALL       _mask+0
 	MOVF       R0+0, 0
@@ -186,7 +186,7 @@ L_main8:
 ;sensor.c,62 :: 		display_temp(DD0, DD1);
 	MOVF       _DD0+0, 0
 	MOVWF      FARG_display_temp_DD0+0
-	MOVF       R0+0, 0
+	MOVF       _DD1+0, 0
 	MOVWF      FARG_display_temp_DD1+0
 	CALL       _display_temp+0
 ;sensor.c,63 :: 		if (temp_value >= valor_manual)
@@ -199,13 +199,13 @@ L_main8:
 L__main43:
 	BTFSS      STATUS+0, 0
 	GOTO       L_main11
-;sensor.c,65 :: 		RA2_bit = 0;
-	BCF        RA2_bit+0, BitPos(RA2_bit+0)
+;sensor.c,65 :: 		RA2_bit = 1;
+	BSF        RA2_bit+0, BitPos(RA2_bit+0)
 ;sensor.c,66 :: 		}
 	GOTO       L_main12
 L_main11:
-;sensor.c,69 :: 		RA2_bit = 1;
-	BSF        RA2_bit+0, BitPos(RA2_bit+0)
+;sensor.c,69 :: 		RA2_bit = 0;
+	BCF        RA2_bit+0, BitPos(RA2_bit+0)
 ;sensor.c,70 :: 		}
 L_main12:
 ;sensor.c,72 :: 		} while (!presionBoton(7)); //Mientras no se presione el boton start
@@ -489,22 +489,16 @@ _DS18B20:
 	MOVWF      FARG_Ow_Read_pin+0
 	CALL       _Ow_Read+0
 	MOVF       R0+0, 0
-	MOVWF      R4+1
-	CLRF       R4+0
-	MOVF       _temp_value+0, 0
-	ADDWF      R4+0, 0
-	MOVWF      R2+0
-	MOVF       R4+1, 0
+	MOVWF      R1+1
+	CLRF       R1+0
+	MOVF       R1+0, 0
+	ADDWF      _temp_value+0, 1
+	MOVF       R1+1, 0
 	BTFSC      STATUS+0, 0
 	ADDLW      1
-	ADDWF      _temp_value+1, 0
-	MOVWF      R2+1
-	MOVF       R2+0, 0
-	MOVWF      _temp_value+0
-	MOVF       R2+1, 0
-	MOVWF      _temp_value+1
+	ADDWF      _temp_value+1, 1
 ;sensor.c,139 :: 		if (temp_value & 0x8000)
-	BTFSS      R2+1, 7
+	BTFSS      _temp_value+1, 7
 	GOTO       L_DS18B2033
 ;sensor.c,141 :: 		temp_value = ~temp_value + 1;
 	COMF       _temp_value+0, 1

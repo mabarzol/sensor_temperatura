@@ -62,11 +62,11 @@ void main()
                 display_temp(DD0, DD1);
                 if (temp_value >= valor_manual)
                 {
-                    RA2_bit = 0;
+                    RA2_bit = 1;
                 }
                 else
                 {
-                    RA2_bit = 1;
+                    RA2_bit = 0;
                 }
 
             } while (!presionBoton(7)); //Mientras no se presione el boton start
