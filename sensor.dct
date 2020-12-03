@@ -120,6 +120,8 @@ eeie
 eeie_bit
 eeif
 eeif_bit
+eeprom_read
+eeprom_write
 equals_double
 f
 ferr

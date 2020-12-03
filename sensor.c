@@ -2,7 +2,7 @@ unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short temp_minima = 10;      //seteo minimo de temperatura
 unsigned short temp_maxima = 50;      //seteo maximo de temperatura
-unsigned short temp_por_defecto = 20; //temperatura por defecto que se setea al encender el sistema
+unsigned short temp_por_defecto = 20; //temperatura por defecto que se setea al encender el sistema leida del eeprom del pic
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
 void DS18B20();
@@ -10,7 +10,6 @@ unsigned short presionBoton(unsigned short pin);
 void main()
 {
     CMCON |= 7;     // Disable Comparators
-                    //*************INPUT AND OUTPUT ****************//
     TRISA0_bit = 0; // RA.0 to RA.2 Output, RA.4 Output
     TRISA1_bit = 0; // RB.0 to RB.6 Output
     TRISA2_bit = 0; // RA.5 Resetn Only
@@ -23,10 +22,13 @@ void main()
     TRISB5_bit = 0;
     TRISB6_bit = 0;
     PORTB = 1;
+    //EEPROM_Write(0x01,20);
+    temp_por_defecto = EEPROM_Read(0x01);  //lee el valor de la temperatura seteada que se almacena en la eeprom
     valor_manual = temp_por_defecto;
-    RA0_bit = 0;
-    RA1_bit = 0;
-    RA2_bit = 1;
+    RA0_bit = 0;  //LOGICA POSITIVA
+    RA1_bit = 0;  //LOGICA POSITIVA
+    RA2_bit = 1;  //LOGICA NEGATIVA
+    RA4_bit = 0;  //LOGICA POSITIVA
     do
     {
         DD0 = valor_manual % 10; // Extract One Digit
@@ -40,6 +42,7 @@ void main()
             if (valor_manual <= temp_maxima) //Si el valor seteado es menor a la temperatura maxima acumule en 1
             {
                 valor_manual++;
+                EEPROM_Write(0x01,valor_manual);
             }
         }
         if (presionBoton(6) == 6) //si se presiono el boton de temp -
@@ -47,6 +50,7 @@ void main()
             if (valor_manual >= temp_minima) //Si el valor seteado es mayor a la temperatura maxima disminuye en 1
             {
                 valor_manual--;
+                EEPROM_Write(0x01,valor_manual);
             }
         }
         if (presionBoton(7) == 7) //si se presiono el boton start
@@ -63,14 +67,17 @@ void main()
                 if (temp_value >= valor_manual)
                 {
                     RA2_bit = 1;
+                    RA4_bit = 0;
                 }
                 else
                 {
                     RA2_bit = 0;
+                    RA4_bit = 1;
                 }
 
             } while (!presionBoton(7)); //Mientras no se presione el boton start
-            RA2_bit = 1;
+            RA2_bit = 1;       //LOGICA NEGATIVA
+            RA4_bit = 0;       //LOGICA POSITIVA
         }
 
     } while (1);

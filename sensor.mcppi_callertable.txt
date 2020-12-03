@@ -1,12 +1,14 @@
 main
 	__CC2DW
 		____DoICP
+	EEPROM_Read
 	Div_8X8_U
 	mask
 	display_temp
 	presionBoton
 		Button
 			Delay_500us
+	EEPROM_Write
 	DS18B20
 		Ow_Reset
 			Delay_500us

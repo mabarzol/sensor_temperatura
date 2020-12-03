@@ -33,10 +33,10 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
-Count=3
+Count=4
 Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\
 Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\
-Path2=C:\Users\PC\Desktop\sensor de temperatura\
+Path2=C:\Users\Mario\Desktop\sensor de temperatura\
 [HEADER_PATH]
 Count=0
 [HEADERS]
@@ -44,9 +44,10 @@ Count=0
 [PLDS]
 Count=0
 [Useses]
-Count=2
+Count=3
 File0=Button
 File1=One_Wire
+File2=EEPROM
 [EXPANDED_NODES]
 Node0=Sources
 Count=1

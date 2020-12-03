@@ -1,4 +1,4 @@
-#line 1 "C:/Users/PC/Desktop/sensor de temperatura/sensor.c"
+#line 1 "C:/Users/Mario/Desktop/sensor de temperatura/sensor.c"
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short temp_minima = 10;
@@ -11,7 +11,6 @@ unsigned short presionBoton(unsigned short pin);
 void main()
 {
  CMCON |= 7;
-
  TRISA0_bit = 0;
  TRISA1_bit = 0;
  TRISA2_bit = 0;
@@ -24,10 +23,13 @@ void main()
  TRISB5_bit = 0;
  TRISB6_bit = 0;
  PORTB = 1;
+
+ temp_por_defecto = EEPROM_Read(0x01);
  valor_manual = temp_por_defecto;
  RA0_bit = 0;
  RA1_bit = 0;
  RA2_bit = 1;
+ RA4_bit = 0;
  do
  {
  DD0 = valor_manual % 10;
@@ -41,6 +43,7 @@ void main()
  if (valor_manual <= temp_maxima)
  {
  valor_manual++;
+ EEPROM_Write(0x01,valor_manual);
  }
  }
  if (presionBoton(6) == 6)
@@ -48,6 +51,7 @@ void main()
  if (valor_manual >= temp_minima)
  {
  valor_manual--;
+ EEPROM_Write(0x01,valor_manual);
  }
  }
  if (presionBoton(7) == 7)
@@ -64,14 +68,17 @@ void main()
  if (temp_value >= valor_manual)
  {
  RA2_bit = 1;
+ RA4_bit = 0;
  }
  else
  {
  RA2_bit = 0;
+ RA4_bit = 1;
  }
 
  } while (!presionBoton(7));
  RA2_bit = 1;
+ RA4_bit = 0;
  }
 
  } while (1);
