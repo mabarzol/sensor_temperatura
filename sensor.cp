@@ -1,8 +1,8 @@
-#line 1 "C:/Users/Mario/Desktop/sensor de temperatura/sensor.c"
+#line 1 "C:/Users/Mario/Desktop/sensor_temperatura/sensor.c"
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short temp_minima = 10;
-unsigned short temp_maxima = 50;
+unsigned short temp_maxima = 99;
 unsigned short temp_por_defecto = 20;
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
@@ -40,7 +40,7 @@ void main()
 
  if (presionBoton(3) == 3)
  {
- if (valor_manual <= temp_maxima)
+ if (valor_manual < temp_maxima)
  {
  valor_manual++;
  EEPROM_Write(0x01,valor_manual);

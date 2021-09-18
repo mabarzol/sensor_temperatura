@@ -98,10 +98,10 @@ L_main0:
 	XORLW      3
 	BTFSS      STATUS+0, 2
 	GOTO       L_main3
-;sensor.c,42 :: 		if (valor_manual <= temp_maxima) //Si el valor seteado es menor a la temperatura maxima acumule en 1
-	MOVF       _valor_manual+0, 0
-	SUBWF      _temp_maxima+0, 0
-	BTFSS      STATUS+0, 0
+;sensor.c,42 :: 		if (valor_manual < temp_maxima) //Si el valor seteado es menor a la temperatura maxima acumule en 1
+	MOVF       _temp_maxima+0, 0
+	SUBWF      _valor_manual+0, 0
+	BTFSC      STATUS+0, 0
 	GOTO       L_main4
 ;sensor.c,44 :: 		valor_manual++;
 	INCF       _valor_manual+0, 1

@@ -1,7 +1,7 @@
 unsigned short i, DD0 = 0x40, DD1 = 0x40, N_Flag, valor_manual;
 unsigned temp_value = 0;
 unsigned short temp_minima = 10;      //seteo minimo de temperatura
-unsigned short temp_maxima = 50;      //seteo maximo de temperatura
+unsigned short temp_maxima = 99;      //seteo maximo de temperatura
 unsigned short temp_por_defecto = 20; //temperatura por defecto que se setea al encender el sistema leida del eeprom del pic
 unsigned short mask(unsigned short num);
 void display_temp(short DD0, short DD1);
@@ -39,7 +39,7 @@ void main()
 
         if (presionBoton(3) == 3) //Si se presiono el boton de temp +
         {
-            if (valor_manual <= temp_maxima) //Si el valor seteado es menor a la temperatura maxima acumule en 1
+            if (valor_manual < temp_maxima) //Si el valor seteado es menor a la temperatura maxima acumule en 1
             {
                 valor_manual++;
                 EEPROM_Write(0x01,valor_manual);
